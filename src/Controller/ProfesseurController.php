@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Professeur;
+use App\Form\ProfesseurType;
+use App\Repository\ProfesseurRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/professeur')]
+final class ProfesseurController extends AbstractController{
+    // Afficher la liste des professeurs
+    #[Route(name: 'app_professeur_index', methods: ['GET'])]
+    public function index(ProfesseurRepository $professeurRepository): Response
+    {
+        return $this->render('professeur/index.html.twig', [
+            'professeurs' => $professeurRepository->findAll(),
+        ]);
+    }
+
+    // Afficher le formulaire pour ajouter un professeur
+    #[Route('/new', name: 'app_professeur_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $professeur = new Professeur();
+        $form = $this->createForm(ProfesseurType::class, $professeur);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($professeur);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_professeur_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('professeur/new.html.twig', [
+            'professeur' => $professeur,
+            'form' => $form,
+        ]);
+    }
+
+    // AFficher en particulier 1 professeur
+    #[Route('/{id}', name: 'app_professeur_show', methods: ['GET'])]
+    public function show(Professeur $professeur): Response
+    {
+        return $this->render('professeur/show.html.twig', [
+            'professeur' => $professeur,
+        ]);
+    }
+
+    // AFficher de quoi éditer un professeur
+    #[Route('/{id}/edit', name: 'app_professeur_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Professeur $professeur, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ProfesseurType::class, $professeur);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_professeur_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('professeur/edit.html.twig', [
+            'professeur' => $professeur,
+            'form' => $form,
+        ]);
+    }
+
+    // Supprimer un professeur en particulier
+    #[Route('/{id}', name: 'app_professeur_delete', methods: ['POST'])]
+    public function delete(Request $request, Professeur $professeur, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$professeur->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($professeur);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_professeur_index', [], Response::HTTP_SEE_OTHER);
+    }
+}

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des cours{% endblock %}
+
+{% block body %}
+    <h1>Liste des cours</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Professeur</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.description }}</td>
+                    <td>{{ course.professeur ? course.professeur.name : 'Non assigné' }}</td>
+                    <td>
+                        <a href="{{ path('course_show', {id: course.id}) }}">Voir</a>
+                        <a href="{{ path('course_edit', {id: course.id}) }}">Modifier</a>
+                        <form action="{{ path('course_delete', {id: course.id}) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ course.id) }}">
+                            <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Pas de cours disponible.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Bouton Ajouter -->
+    <a href="{{ path('course_new') }}">Ajouter un nouveau cours</a>
+{% endblock %}

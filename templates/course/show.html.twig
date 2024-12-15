@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du cours{% endblock %}
+
+{% block body %}
+    <h1>{{ course.title }}</h1>
+    <p>Description : {{ course.description }}</p>
+    <p>Professeur : {{ course.professeur ? course.professeur.name : 'Non assigné' }}</p>
+
+    <a href="{{ path('course_index') }}">Revenir à la liste</a>
+{% endblock %}

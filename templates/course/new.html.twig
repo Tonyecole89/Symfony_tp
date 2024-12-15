@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un nouveau cours{% endblock %}
+
+{% block body %}
+    <h1>Créer un nouveau cours</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.professeur) }}
+        <button class="btn btn-primary">Créer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('course_index') }}">Revenir à la liste des cours</a>
+{% endblock %}
